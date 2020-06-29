@@ -28,6 +28,7 @@ class Graph:
         #Getting the average
         self.distances = np.zeros((n,n))
         avg = 0
+        print("creating nodes")
         for i in range(0,n):
             for j in range(i,n):
                 if(i == j): continue
@@ -43,12 +44,20 @@ class Graph:
 
         #Making friends
         #dist = random.exponential(scale=avg, size=(self.n, self.n))
+        print("Making friends!")
+        friends = np.zeros(self.n)
         for i in range(0,n):
             for j in range(i,n):
                 if(i == j): continue
                 rn = np.random.uniform(0,1);
                 #print("Checking:","[",i,",",j,"]","for", rn ,"<=", avg/(avg + self.distances[i][j]) ," is ",rn <= avg/(avg + self.distances[i][j]))
                 if(rn <= avg/(avg + self.distances[i][j])):
+                    #if(rn <= 1/(self.distances[i][j]*self.distances[i][j])):
                     self.nodes[i].edges[j] = self.nodes[j]
                     self.nodes[j].edges[i] = self.nodes[i]
+                    friends[i] = friends[i] + 1
             #print("Node:",self.nodes[i],"\nEdges:\n",self.nodes[i].edges,"\n")
+        
+        meanFriends = np.mean(friends)
+        print("Average friend per node: ", meanFriends)
+        print("Average distance between nodes: ", avg)

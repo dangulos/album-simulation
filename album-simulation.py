@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 from graph import Graph
 
@@ -16,6 +17,7 @@ def getAPrint(distrubutions):
         r = r - distrubutions[i]
     return -1
 
+
 def simulation(n,max_x, max_y, albumN):
     g = Graph(n=n, max_x=max_x, max_y=max_y, albumN=albumN)
     o = Observer()
@@ -27,13 +29,14 @@ def simulation(n,max_x, max_y, albumN):
     print(distributions)
     while(o.printsInAlbums != n*albumN):
         o.totalDays = o.totalDays + 1
-        print(o.totalDays)
         for i in range(0,g.nodes.shape[0]):
             p = getAPrint(distributions)
             o.totalPrints = o.totalPrints + 1
             if(g.nodes[i].album[p-1]==0):
                 g.nodes[i].album[p-1] = 1
                 o.printsInAlbums = o.printsInAlbums + 1
+                if(np.sum(g.nodes[i].album) == albumN):
+                    o.completedAlbums = o.completedAlbums + 1
             else:
                 g.nodes[i].bag.append(p)
                 o.freePrints = o.freePrints + 1
@@ -47,6 +50,25 @@ def simulation(n,max_x, max_y, albumN):
                         g.nodes[i].album[k] = 1
                         o.freePrints = o.freePrints - 1
                         o.printsInAlbums = o.printsInAlbums + 1
+                        #print("np.sum(g.nodes[i].album)")
+                        if(np.sum(g.nodes[i].album) == albumN):
+                            o.completedAlbums = o.completedAlbums + 1
+        print("======================================================")
+        print("Day: ",o.totalDays,"\ntotalPrints: ",o.totalPrints,"\nUsedPrints: ", o.printsInAlbums,"\nFree Prints: ",o.freePrints,"\nCompleted albums: ",o.completedAlbums)
+    print("======================================================")
+    print("End of simulation!")
+    print("Days to complete all albums: ",o.totalDays)
+    
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("n")
+    parser.add_argument("-x", "--maxx", nargs='?', const='maxx', default='100')
+    parser.add_argument("-y", "--maxy", nargs='?', const='maxy', default='100')
+    parser.add_argument("-a", "--albumNumber", nargs='?', const='albumNumber', default='6')
+    args = parser.parse_args()
+    print(args)
+    simulation(n=int(args.n),max_x=int(args.maxx), max_y=int(args.maxy), albumN=int(args.albumNumber))
+
 
 if __name__ == "__main__":
-    simulation(n=100,max_x=1000, max_y=1000, albumN=6)
+    main()
